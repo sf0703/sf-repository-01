@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.meeting.mapper.TblConferenceMinutesMapper">
+    <select id="selectAllMeetingsByReserId" resultType="java.util.Map">
+                     select a.* from tbl_conference_info as a,tbl_conference_minutes
+
+        <where>
+            a.id= tbl_conference_minutes.`conference_id`
+            <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+               and create_time between #{startTime} and #{endTime}
+            </if>
+            and a.status in (4,5)
+            and tbl_conference_minutes.user_id = #{userId}
+        </where>
+
+
+<!--          and tbl_conference_minutes.status = 1-->
+    </select>
+
+    <update id="attendMeeting">
+
+                update tbl_conference_minutes set
+                status = #{status}
+                where conference_id = #{conferenceId}
+
+    </update>
+
+    <update id="notAttendMeeting">
+
+                update tbl_conference_minutes set
+                status = #{status} , declare_text = #{declareText}
+                where conference_id = #{conferenceId}
+
+
+    </update>
+
+    <select id="queryMeetingByUserId" resultType="java.lang.Integer">
+
+                select count(1)
+        from `tbl_conference_minutes`
+        WHERE `tbl_conference_minutes`.`conference_id` in
+        (SELECT id FROM `tbl_conference_info`
+        WHERE `tbl_conference_info`.`status` =4)
+        and status = 0
+        and user_id = #{userId}
+
+    </select>
+</mapper>

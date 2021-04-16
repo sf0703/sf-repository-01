@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.meeting.mapper.TblConferenceInfoMapper">
+    <update id="meetingConference">
+
+                UPDATE tbl_conference_info SET
+                conference_summary = #{conferenceSummary}
+                WHERE ID = #{id}
+
+    </update>
+
+    <select id="queryMeetingByUser" resultType="java.util.Map">
+
+                select * from `tbl_conference_info`
+                where id in
+                (select `conference_id` from `tbl_conference_minutes` where status = #{userStatus} and user_id = #{userId})
+                and `conference_type` = #{conferenceType}
+                and status = #{status}
+
+
+    </select>
+
+    <select id="queryAllMeeting" resultType="java.util.Map">
+
+                select * from tbl_conference_info
+
+       <where>
+           <if test="startTime != null and startTime != '' and endTime != null and endTime != ''">
+               create_time between  #{startTime} AND  #{endTime}
+           </if>
+           <if test="status != null and status != ''">
+               and status = #{status}
+           </if>
+       </where>
+    </select>
+</mapper>
